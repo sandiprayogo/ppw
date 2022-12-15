@@ -17,7 +17,7 @@ Mari melakukan crawling data dengan menyenagkan!!!:
 # customize form
 # with st.form(key='Twitter_form'):
     # search_term = st.text_input('Input data yang dicari')
-    # limit = st.slider('Banyak tweet yg diinginkan', 0, 500, step=5)
+    # limit = st.slider('Banyak Abstrak yg diinginkan', 0, 500, step=5)
     # output_csv = st.radio('Simpan file CSV?', ['Ya', 'Tdk'])
     # file_name = st.text_input('Nama file CSV:')
     # submit_button = st.form_submit_button(label='Cari')
@@ -34,7 +34,7 @@ Mari melakukan crawling data dengan menyenagkan!!!:
     #     twint.run.Search(c)
 
     #     st.markdown('hasil crawling data')
-    #     data = pd.read_csv(f'{file_name}.csv', usecols=['date', 'tweet'])
+    #     data = pd.read_csv(f'{file_name}.csv', usecols=['date', 'Abstrak'])
 
 data = pd.read_csv("https://raw.githubusercontent.com/sandiprayogo/ppw/main/Abstraksi.csv")
 st.table(data)
@@ -45,7 +45,7 @@ proses untuk menyeleksi data text agar menjadi lebih terstruktur lagi dengan
 melalui serangkaian tahapan yang meliputi tahapan case folding, tokenizing, filtering dan stemming
 """)
 
-data['tweet'] = data['tweet'].str.lower()
+data['Abstrak'] = data['Abstrak'].str.lower()
 
 def remove_special(text):
     # remove tab, new line, ans back slice
@@ -56,39 +56,39 @@ def remove_special(text):
     text = ' '.join(re.sub("([@#][A-Za-z0-9]+)|(\w+:\/\/\S+)"," ", text).split())
     # remove incomplete URL
     return text.replace("http://", " ").replace("https://", " ")
-data['tweet'] = data['tweet'].apply(remove_special)
+data['Abstrak'] = data['Abstrak'].apply(remove_special)
 
 #remove number
 def remove_number(text):
     return  re.sub(r"\d+", "", text)
-data['tweet'] = data['tweet'].apply(remove_number)
+data['Abstrak'] = data['Abstrak'].apply(remove_number)
 
 #remove punctuation
 def remove_punctuation(text):
     return text.translate(str.maketrans("","",string.punctuation))
-data['tweet'] = data['tweet'].apply(remove_punctuation)
+data['Abstrak'] = data['Abstrak'].apply(remove_punctuation)
 
 #remove whitespace leading & trailing
 def remove_whitespace_LT(text):
     return text.strip()
-data['tweet'] = data['tweet'].apply(remove_whitespace_LT)
+data['Abstrak'] = data['Abstrak'].apply(remove_whitespace_LT)
 
 #remove multiple whitespace into single whitespace
 def remove_whitespace_multiple(text):
     return re.sub('\s+',' ',text)
-data['tweet'] = data['tweet'].apply(remove_whitespace_multiple)
+data['Abstrak'] = data['Abstrak'].apply(remove_whitespace_multiple)
 
 # remove single char
 def remove_singl_char(text):
     return re.sub(r"\b[a-zA-Z]\b", " ", text)
-data['tweet'] = data['tweet'].apply(remove_singl_char)
+data['Abstrak'] = data['Abstrak'].apply(remove_singl_char)
 
 # token
 nltk.download('punkt')
 # NLTK word Tokenize 
 def word_tokenize_wrapper(text):
     return word_tokenize(text)
-data['tweet'] = data['tweet'].apply(word_tokenize_wrapper)
+data['Abstrak'] = data['Abstrak'].apply(word_tokenize_wrapper)
 
 # filtering
 nltk.download('stopwords')
@@ -106,7 +106,7 @@ list_stopwords = set(list_stopwords)
 #Menghapus Stopword dari list token
 def stopwords_removal(words):
     return [word for word in words if word not in list_stopwords]
-data['tweet'] = data['tweet'].apply(stopwords_removal)
+data['Abstrak'] = data['Abstrak'].apply(stopwords_removal)
 
 # stemming
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
@@ -119,7 +119,7 @@ def stemmed_wrapper(term):
     return stemmer.stem(term)
 term_dict = {}
 
-for document in data['tweet']:
+for document in data['Abstrak']:
     for term in document:
         if term not in term_dict:
             term_dict[term] = ' '
@@ -137,10 +137,10 @@ print("------------------------")
 # apply stemmed term to dataframe
 def get_stemmed_term(document):
     return [term_dict[term] for term in document]
-data['tweet'] = data['tweet'].swifter.apply(get_stemmed_term)
-data['tweet'].to_csv('Prepocessing.csv',index=False)
-# st.table(data['tweet'])
-st.dataframe(data['tweet'])
+data['Abstrak'] = data['Abstrak'].swifter.apply(get_stemmed_term)
+data['Abstrak'].to_csv('Prepocessing.csv',index=False)
+# st.table(data['Abstrak'])
+st.dataframe(data['Abstrak'])
 
 st.subheader("TF-IDF")
 st.markdown("""
@@ -151,7 +151,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 #Membuat Dataframe
 dataTextPre = pd.read_csv('Prepocessing.csv',index_col=False)
 vectorizer = CountVectorizer(min_df=1)
-bag = vectorizer.fit_transform(dataTextPre['tweet'])
+bag = vectorizer.fit_transform(dataTextPre['Abstrak'])
 
 """### Matrik VSM(Visual Space Model)
 Sebelum menghitung nilai TF, terlebih dahulu buat matrik vsm untuk menentukan bobot nilai term pada dokumen, hasilnya sebagaii berikut.
@@ -171,7 +171,7 @@ Setelah didapat nilai matrik vsm, maka nilai term frequency yang didapat pada ma
 """
 datalabel = pd.read_csv('Prepocessing.csv',index_col=False)
 TF = pd.read_csv('TF.csv',index_col=False)
-dataJurnal = pd.concat([TF, datalabel["tweet"]], axis=1)
+dataJurnal = pd.concat([TF, datalabel["Abstrak"]], axis=1)
 st.dataframe(dataJurnal)
 
 st.subheader("Kmeans")
