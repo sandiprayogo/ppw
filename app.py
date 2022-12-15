@@ -17,7 +17,7 @@ Mari melakukan crawling data dengan menyenagkan!!!:
 # customize form
 with st.form(key='Twitter_form'):
     search_term = st.text_input('Input data yang dicari')
-    limit = st.slider('Banyak tweet yg diinginkan', 0, 500, step=20)
+    limit = st.slider('Banyak tweet yg diinginkan', 0, 500, step=5)
     output_csv = st.radio('Simpan file CSV?', ['Ya', 'Tdk'])
     file_name = st.text_input('Nama file CSV:')
     submit_button = st.form_submit_button(label='Cari')
