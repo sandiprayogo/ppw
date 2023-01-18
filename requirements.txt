@@ -2,7 +2,7 @@ aiohttp==3.7.0
 aiohttp_socks==0.4.1
 async_timeout==3.0.1
 beautifulsoup4==4.11.1
-fake_useragent==1.1.1
+fake-useragent==1.1.1
 geopy==2.3.0
 googletransx==2.4.2
 matplotlib==3.5.3
